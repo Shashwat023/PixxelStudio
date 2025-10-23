@@ -30,27 +30,37 @@ const Contact = () => {
     setStatus({ type: '', message: '' });
 
     try {
-      await contactAPI.submit(formData);
-      setStatus({
-        type: 'success',
-        message: 'Thank you for your message! I\'ll get back to you within 24 hours.'
-      });
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        eventDate: '',
-        eventType: '',
-        budget: ''
-      });
+      const response = await contactAPI.submit(formData);
+
+      if (response.status >= 200 && response.status < 300) {
+        setStatus({
+          type: 'success',
+          message: "Thank you for contacting us! Your details have been received."
+        });
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: '',
+          eventDate: '',
+          eventType: '',
+          budget: ''
+        });
+      } else {
+        setStatus({
+          type: 'error',
+          message: 'Unexpected response from server. Please try again.'
+        });
+      }
     } catch (error) {
+      console.error('Contact form error:', error);
       setStatus({
         type: 'error',
-        message: 'Something went wrong. Please try again or contact me directly.'
+        message: 'Unable to submit form right now. Please try again later.'
       });
-    } finally {
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -59,25 +69,25 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email',
-      content: 'hello@pixelstudio.com',
-      link: 'mailto:hello@pixelstudio.com'
+      content: 'pixxelstudiolab@gmail.com',
+      link: 'mailto:pixxelstudiolab@gmail.com'
     },
     {
       icon: Phone,
       title: 'Phone',
-      content: '+91 98765 43210',
-      link: 'tel:+919876543210'
+      content: '+91 9839340599, 6307704482',
+      link: 'tel:+919839340599'
     },
     {
       icon: MapPin,
       title: 'Studio Location',
-      content: '123 Photography Street, Creative District, City 12345',
-      link: 'https://maps.google.com'
+      content: 'SH-16/57 D-1 B-1 Shivpur, Varanasi, Uttar Pradesh 221003',
+      link: 'https://www.google.com/maps/place/25%C2%B021\'08.1%22N+82%C2%B057\'23.1%22E/@25.352739,82.955368,16z/data=!4m4!3m3!8m2!3d25.35225!4d82.9564167?hl=en&entry=ttu&g_ep=EgoyMDI1MTAyMC4wIKXMDSoASAFQAw%3D%3D'
     },
     {
       icon: Clock,
       title: 'Working Hours',
-      content: 'Mon - Sat: 9:00 AM - 7:00 PM',
+      content: 'Mon - Sat: 10:00 AM - 7:00 PM',
       link: null
     }
   ];
@@ -361,7 +371,7 @@ const Contact = () => {
                 </h3>
                 <div className="aspect-video bg-dark-800 rounded-xl overflow-hidden">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343008!2d-74.00425878459418!3d40.74844097932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259bf5c1654f3%3A0xc80f9cfce5383d5d!2sGoogle!5e0!3m2!1sen!2sus!4v1635959592621!5m2!1sen!2sus"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3605.393939699314!2d82.9712958753878!3d25.35804597760639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x398e2de70808587d%3A0x1d9c1b538e1322e7!2sThe%20Pixxel%20Studio!5e0!3m2!1sen!2sin!4v1716378931051!5m2!1sen!2sin"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

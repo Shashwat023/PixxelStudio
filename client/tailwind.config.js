@@ -13,28 +13,28 @@ module.exports = {
           300: '#fdba74',
           400: '#fb923c',
           500: '#f97316',
-          600: '#FF6600', // Main orange from logo
+          600: '#FF6600', // Highlight color
           700: '#c2410c',
           800: '#9a3412',
           900: '#7c2d12',
         },
         dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
+          50: '#FAFAFA',
+          100: '#F0F0F0',
+          200: '#E0E0E0',
+          300: '#CCCCCC',
+          400: '#B3B3B3',
+          500: '#999999', // Your requested grayish color
+          600: '#5C5C5C',
+          700: '#454545',
+          800: '#2F2F2F',
+          900: '#1B1B1B',
+          950: '#101010', // A deeper black for backgrounds
         }
       },
       fontFamily: {
-        'sans': ['Poppins', 'system-ui', 'sans-serif'],
-        'display': ['Lato', 'system-ui', 'sans-serif'],
+        'sans': ['Jost', 'system-ui', 'sans-serif'],
+        'display': ['Jost', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

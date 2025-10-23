@@ -6,7 +6,7 @@ import Hero from '../components/Hero';
 
 const Home = () => {
   const stats = [
-    { icon: Camera, number: '25+', label: 'Years Experience' },
+    { icon: Camera, number: '30+', label: 'Years Experience' },
     { icon: Heart, number: '500+', label: 'Weddings Captured' },
     { icon: Users, number: '1000+', label: 'Happy Clients' },
     { icon: Award, number: '50+', label: 'Awards Won' },
@@ -102,7 +102,7 @@ const Home = () => {
                 <span className="text-primary-600"> Precious Moments</span>
               </h2>
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                With over 25 years of experience in professional photography, I specialize in 
+                With over 30+ years of experience in professional photography, I specialize in 
                 creating timeless images that tell your unique story. Every wedding, every moment, 
                 every emotion is captured with artistic vision and technical excellence.
               </p>
@@ -125,7 +125,7 @@ const Home = () => {
             >
               <div className="aspect-square rounded-2xl overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  src="/about.jpg"
                   alt="Photographer at work"
                   className="w-full h-full object-cover"
                 />
@@ -183,7 +183,7 @@ const Home = () => {
                   </p>
                   <ul className="space-y-2 mb-6">
                     {service.features.map((feature) => (
-                      <li key={feature} className="text-sm text-gray-500 flex items-center">
+                      <li key={feature} className="text-sm text-white flex items-center">
                         <div className="w-1.5 h-1.5 bg-primary-600 rounded-full mr-3"></div>
                         {feature}
                       </li>
@@ -250,7 +250,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600 to-primary-700">
+      <section className="section-padding bg-gradient-to-r from-primary-600 to-orange-500">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

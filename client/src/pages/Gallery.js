@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Grid, List, Search, X } from 'lucide-react';
@@ -16,6 +16,7 @@ const Gallery = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     fetchCategories();
@@ -23,7 +24,16 @@ const Gallery = () => {
   }, []);
 
   useEffect(() => {
+    // Skip on initial mount to avoid duplicate API calls
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    // Reset state and fetch fresh images when category or search term changes
+    setImages([]);
     setPage(1);
+    setHasMore(true);
     fetchImages(true);
   }, [selectedCategory, searchTerm]);
 
@@ -40,7 +50,7 @@ const Gallery = () => {
     try {
       setLoading(true);
       const params = {
-        category: selectedCategory,
+        category: selectedCategory === 'all' ? undefined : selectedCategory,
         page: reset ? 1 : page,
         limit: 20
       };
@@ -51,7 +61,12 @@ const Gallery = () => {
       if (reset) {
         setImages(newImages);
       } else {
-        setImages(prev => [...prev, ...newImages]);
+        // Prevent duplicates by filtering out images that already exist
+        setImages(prev => {
+          const existingIds = new Set(prev.map(img => img._id));
+          const uniqueNewImages = newImages.filter(img => !existingIds.has(img._id));
+          return [...prev, ...uniqueNewImages];
+        });
       }
 
       setHasMore(response.data.pagination.current < response.data.pagination.pages);
@@ -63,11 +78,16 @@ const Gallery = () => {
     }
   };
 
-  const filteredImages = images.filter(image =>
-    image.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    image.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    image.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredImages = images
+    .filter(image =>
+      image.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      image.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      image.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    // Remove any potential duplicates based on _id
+    .filter((image, index, array) => 
+      array.findIndex(img => img._id === image._id) === index
+    );
 
   const categoryLabels = {
     all: 'All Work',
@@ -209,7 +229,7 @@ const Gallery = () => {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className={`grid gap-6 ${
+              className={`grid gap-6 mt-[50px] ${
                 viewMode === 'grid'
                   ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                   : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'

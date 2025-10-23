@@ -7,7 +7,7 @@ const sampleContent = [
     section: 'hero',
     title: 'Capturing Life\'s Most Precious Moments',
     subtitle: 'Professional Photography',
-    content: 'With over 25 years of experience, I specialize in creating timeless images that tell your unique story. Every wedding, every moment, every emotion is captured with artistic vision and technical excellence.',
+    content: 'With over 30+ years of experience, I specialize in creating timeless images that tell your unique story. Every wedding, every moment, every emotion is captured with artistic vision and technical excellence.',
     metadata: {
       primaryButtonText: 'View Portfolio',
       secondaryButtonText: 'Get in Touch'
@@ -17,10 +17,10 @@ const sampleContent = [
   {
     section: 'about',
     title: 'About the Artist',
-    subtitle: '25+ Years of Experience',
+    subtitle: '30+ Years of Experience',
     content: 'My journey in photography began as a passion and evolved into a calling. I believe that photography is not just about taking pictures—it\'s about preserving memories, emotions, and stories that will be cherished for generations.\n\nEvery wedding, every portrait, every moment I capture is treated with the utmost care and artistic vision. My approach combines photojournalistic storytelling with fine art aesthetics, ensuring that your memories are preserved in the most beautiful and authentic way possible.',
     metadata: {
-      experience: '25+ years',
+      experience: '30+ years',
       weddings: '500+',
       clients: '1000+',
       awards: '50+'

@@ -163,14 +163,32 @@ router.put('/gallery/:id', auth, async (req, res) => {
   try {
     const { title, description, category, featured, tags, order } = req.body;
     
+    // Handle featured - accept both boolean and string formats
+    let featuredValue = featured;
+    if (typeof featured === 'string') {
+      featuredValue = featured === 'true';
+    } else if (typeof featured === 'boolean') {
+      featuredValue = featured;
+    } else {
+      featuredValue = false;
+    }
+    
+    // Handle tags - accept both array and comma-separated string formats
+    let tagsArray = [];
+    if (Array.isArray(tags)) {
+      tagsArray = tags;
+    } else if (typeof tags === 'string' && tags) {
+      tagsArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
+    }
+    
     const updatedImage = await Gallery.findByIdAndUpdate(
       req.params.id,
       {
         title,
         description,
         category,
-        featured: featured === 'true',
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+        featured: featuredValue,
+        tags: tagsArray,
         order: parseInt(order) || 0
       },
       { new: true }

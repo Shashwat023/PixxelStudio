@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { Instagram, Facebook, Youtube, Mail, Phone, MapPin, Heart } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
+    { icon: Instagram, href: 'https://www.instagram.com/the_pixxelstudio/', label: 'Instagram' },
+    { icon: Facebook, href: 'https://www.facebook.com/people/The-pixxel-studio/61560662777224/', label: 'Facebook' },
+    { icon: Youtube, href: 'https://www.youtube.com/@the_pixxelstudio', label: 'Youtube' },
   ];
 
   const quickLinks = [
@@ -47,7 +47,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-dark-400 text-sm leading-relaxed">
-              Capturing life's most precious moments with 25+ years of professional photography experience. 
+              Capturing life's most precious moments with 30+ years of professional photography experience. 
               Specializing in weddings, pre-weddings, and portrait photography.
             </p>
             <div className="flex space-x-4">
@@ -119,15 +119,15 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-dark-400 text-sm">
                 <Mail size={16} className="text-primary-600" />
-                <span>hello@pixelstudio.com</span>
+                <span>pixxelstudio.in</span>
               </div>
               <div className="flex items-center space-x-3 text-dark-400 text-sm">
                 <Phone size={16} className="text-primary-600" />
-                <span>+91 98765 43210</span>
+                <span>+91 9839340599, +91 6307704482</span>
               </div>
               <div className="flex items-start space-x-3 text-dark-400 text-sm">
                 <MapPin size={16} className="text-primary-600 mt-0.5" />
-                <span>123 Photography Street,<br />Creative District, City 12345</span>
+                <span>SH-16/57 D-1 B-1 Shivpur, Varanasi,<br/>Uttar Pradesh 221003</span>
               </div>
             </div>
           </motion.div>

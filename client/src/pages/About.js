@@ -4,7 +4,7 @@ import { Camera, Award, Heart, Users, Star, Quote } from 'lucide-react';
 
 const About = () => {
   const achievements = [
-    { icon: Camera, number: '25+', label: 'Years of Experience' },
+    { icon: Camera, number: '30+', label: 'Years of Experience' },
     { icon: Heart, number: '500+', label: 'Weddings Captured' },
     { icon: Users, number: '1000+', label: 'Happy Clients' },
     { icon: Award, number: '50+', label: 'Awards Won' },
@@ -87,11 +87,11 @@ const About = () => {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
-                About the
-                <span className="text-primary-600"> Artist</span>
+                Hello, I'm 
+                <span className="text-primary-600"> B.N Verma</span>
               </h1>
               <p className="text-xl text-gray-300 leading-relaxed mb-6">
-                With over 25 years of experience behind the lens, I've dedicated my life to 
+                With over 30+ years of experience behind the lens, I've dedicated my life to 
                 capturing the most precious moments that define our human experience.
               </p>
               <p className="text-gray-400 leading-relaxed mb-8">
@@ -123,14 +123,14 @@ const About = () => {
             >
               <div className="aspect-[4/5] rounded-2xl overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  src="/about.jpg"
                   alt="Professional photographer"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary-600 rounded-2xl flex items-center justify-center">
                 <div className="text-center text-white">
-                  <div className="text-2xl font-bold">25+</div>
+                  <div className="text-2xl font-bold">30+</div>
                   <div className="text-sm">Years</div>
                 </div>
               </div>

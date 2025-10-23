@@ -43,7 +43,12 @@ const AdminGallery = () => {
         setImages(newImages);
         setPage(1);
       } else {
-        setImages(prev => [...prev, ...newImages]);
+        // Prevent duplicates by filtering out images that already exist
+        setImages(prev => {
+          const existingIds = new Set(prev.map(img => img._id));
+          const uniqueNewImages = newImages.filter(img => !existingIds.has(img._id));
+          return [...prev, ...uniqueNewImages];
+        });
       }
 
       setHasMore(response.data.pagination.current < response.data.pagination.pages);
@@ -82,10 +87,15 @@ const AdminGallery = () => {
     }
   };
 
-  const filteredImages = images.filter(image =>
-    image.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    image.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredImages = images
+    .filter(image =>
+      image.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      image.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    // Remove any potential duplicates based on _id
+    .filter((image, index, array) => 
+      array.findIndex(img => img._id === image._id) === index
+    );
 
   const categories = [
     { value: 'all', label: 'All Categories' },
@@ -483,12 +493,20 @@ const EditModal = ({ image, isOpen, onClose, onUpdate }) => {
 
   useEffect(() => {
     if (image) {
+      // Safely handle tags - check if it's an array or string
+      let tagsString = '';
+      if (Array.isArray(image.tags)) {
+        tagsString = image.tags.join(', ');
+      } else if (typeof image.tags === 'string') {
+        tagsString = image.tags;
+      }
+      
       setFormData({
         title: image.title || '',
         description: image.description || '',
         category: image.category || 'weddings',
         featured: image.featured || false,
-        tags: image.tags?.join(', ') || '',
+        tags: tagsString,
         order: image.order || 0
       });
     }
@@ -499,14 +517,22 @@ const EditModal = ({ image, isOpen, onClose, onUpdate }) => {
     setUpdating(true);
 
     try {
+      // Safely process tags
+      const processedTags = formData.tags 
+        ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        : [];
+      
       const response = await adminAPI.updateImage(image._id, {
         ...formData,
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        tags: processedTags
       });
       onUpdate(response.data.image);
     } catch (error) {
       console.error('Update error:', error);
-      alert('Failed to update image');
+      
+      // Provide more specific error messages
+      const errorMessage = error.response?.data?.message || 'Failed to update image. Please try again.';
+      alert(errorMessage);
     } finally {
       setUpdating(false);
     }

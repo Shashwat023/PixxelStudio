@@ -11,28 +11,28 @@ const Hero = () => {
   const heroImages = [
     {
       id: 1,
-      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+      src: "/bg_1.jpg",
       title: 'Eternal Moments',
       subtitle: 'Wedding Photography',
       description: 'Capturing the magic of your special day with timeless elegance'
     },
     {
       id: 2,
-      url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+      src: '/bg_2.jpg',
       title: 'Love Stories',
       subtitle: 'Pre-Wedding Sessions',
       description: 'Beautiful moments before the big day, captured with artistic vision'
     },
     {
       id: 3,
-      url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+      src: '/bg_3.jpg',
       title: 'Celebration of Life',
       subtitle: 'Event Photography',
       description: 'Every celebration deserves to be remembered in its full glory'
     },
     {
       id: 4,
-      url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+      src: '/bg_4.jpg',
       title: 'Personal Stories',
       subtitle: 'Portrait Sessions',
       description: 'Revealing the unique personality and beauty in every individual'
@@ -76,7 +76,7 @@ const Hero = () => {
           <div
             className="w-full h-full bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url(${heroImages[currentSlide].url})`,
+              backgroundImage: `url(${heroImages[currentSlide].src})`,
             }}
           >
             {/* Overlay */}
