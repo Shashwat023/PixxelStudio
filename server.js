@@ -35,19 +35,25 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-// Routes
+// API Routes - these must come before static file serving
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/content', require('./routes/content'));
 
 // Serve static files from React build
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Serve React app for all non-API routes (catch-all must be last)
+app.get('*', (req, res) => {
+  const indexPath = path.join(__dirname, 'client/build', 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err);
+      res.status(500).send('Error loading application. Please ensure the build directory exists.');
+    }
   });
-}
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
