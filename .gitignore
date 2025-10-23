@@ -83,7 +83,7 @@ jspm_packages/
 
 # Gatsby files
 .cache/
-public
+# public - REMOVED: This was ignoring client/public which contains index.html needed for React build
 
 # Storybook build outputs
 .out
