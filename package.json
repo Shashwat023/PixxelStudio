@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon server.js",
+    "server": "node server.js",
     "client": "cd client && npm start",
-    "build": "cd client && npm run build",
+    "build": "npm run install-client && cd client && npm run build",
     "install-client": "cd client && npm install",
     "seed": "node seedData.js",
     "setup": "npm install && npm run install-client && npm run seed"
