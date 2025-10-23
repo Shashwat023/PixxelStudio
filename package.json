@@ -6,12 +6,13 @@
   "scripts": {
     "start": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node server.js",
+    "server": "nodemon server.js",
     "client": "cd client && npm start",
     "build": "cd client && npm run build",
     "install-client": "cd client && npm install",
     "seed": "node seedData.js",
-    "setup": "npm install && npm run install-client && npm run seed"
+    "setup": "npm install && npm run install-client && npm run seed",
+    "postinstall": "npm run build"
   },
   "keywords": ["photography", "portfolio", "mern", "react", "mongodb"],
   "author": "Professional Photographer",
