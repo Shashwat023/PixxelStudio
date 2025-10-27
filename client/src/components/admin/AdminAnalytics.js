@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Chart as ChartJS,
@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { TrendingUp, Users, Eye, Camera, Calendar } from 'lucide-react';
+import { adminAPI } from '../../utils/api';
 
 ChartJS.register(
   CategoryScale,
@@ -28,49 +29,100 @@ ChartJS.register(
 );
 
 const AdminAnalytics = () => {
-  // Sample data - replace with real analytics data
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      const response = await adminAPI.getAnalytics();
+      setAnalytics(response.data);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !analytics) {
+    return (
+      <div className="p-8">
+        <div className="animate-pulse space-y-8">
+          <div className="h-8 bg-dark-800 rounded w-1/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-dark-800 rounded-xl"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const stats = [
     {
-      title: 'Total Views',
-      value: '12,543',
-      change: '+12.5%',
-      icon: Eye,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10'
-    },
-    {
-      title: 'Gallery Views',
-      value: '8,234',
-      change: '+8.2%',
-      icon: Camera,
-      color: 'text-green-500',
-      bgColor: 'bg-green-500/10'
-    },
-    {
-      title: 'Contact Inquiries',
-      value: '156',
-      change: '+23.1%',
+      title: 'Total Contacts',
+      value: analytics.totalContacts.toString(),
+      change: `${analytics.contactsChange >= 0 ? '+' : ''}${analytics.contactsChange}%`,
       icon: Users,
       color: 'text-purple-500',
       bgColor: 'bg-purple-500/10'
     },
     {
+      title: 'Gallery Images',
+      value: analytics.totalGalleryImages.toString(),
+      change: 'Total',
+      icon: Camera,
+      color: 'text-green-500',
+      bgColor: 'bg-green-500/10'
+    },
+    {
+      title: 'Recent Inquiries',
+      value: analytics.recentContacts.toString(),
+      change: 'Last 30 days',
+      icon: Eye,
+      color: 'text-blue-500',
+      bgColor: 'bg-blue-500/10'
+    },
+    {
       title: 'Bookings',
-      value: '42',
-      change: '+15.3%',
+      value: analytics.bookedEvents.toString(),
+      change: `${analytics.completedEvents} completed`,
       icon: Calendar,
       color: 'text-primary-500',
       bgColor: 'bg-primary-500/10'
     }
   ];
 
-  // Chart data
+  // Prepare chart data from real analytics
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  // Create array for last 7 months
+  const last7Months = [];
+  const contactsData = [];
+  const now = new Date();
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    last7Months.push(monthNames[date.getMonth()]);
+    
+    // Find matching data from analytics
+    const matchingData = analytics.contactsOverTime.find(
+      item => item._id.year === date.getFullYear() && item._id.month === date.getMonth() + 1
+    );
+    contactsData.push(matchingData ? matchingData.count : 0);
+  }
+
   const visitorData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    labels: last7Months,
     datasets: [
       {
-        label: 'Website Visitors',
-        data: [1200, 1900, 3000, 2500, 3200, 4100, 3800],
+        label: 'Contact Inquiries',
+        data: contactsData,
         borderColor: '#FF6600',
         backgroundColor: 'rgba(255, 102, 0, 0.1)',
         tension: 0.4,
@@ -78,12 +130,24 @@ const AdminAnalytics = () => {
     ],
   };
 
+  // Event type data
+  const eventTypeLabels = {
+    'wedding': 'Wedding',
+    'pre-wedding': 'Pre-Wedding',
+    'event': 'Event',
+    'portrait': 'Portrait',
+    'other': 'Other'
+  };
+  
+  const eventLabels = analytics.contactsByEventType.map(item => eventTypeLabels[item._id] || item._id);
+  const eventCounts = analytics.contactsByEventType.map(item => item.count);
+
   const serviceData = {
-    labels: ['Photography', 'Videography', 'Retouching', 'Aerial', 'Lighting', 'Color Grading'],
+    labels: eventLabels.length > 0 ? eventLabels : ['No Data'],
     datasets: [
       {
-        label: 'Service Inquiries',
-        data: [45, 32, 28, 15, 22, 18],
+        label: 'Event Type Inquiries',
+        data: eventCounts.length > 0 ? eventCounts : [0],
         backgroundColor: [
           '#FF6600',
           '#ef4444',
@@ -96,12 +160,25 @@ const AdminAnalytics = () => {
     ],
   };
 
+  // Status distribution data
+  const statusLabels = {
+    'new': 'New',
+    'contacted': 'Contacted',
+    'quoted': 'Quoted',
+    'booked': 'Booked',
+    'completed': 'Completed',
+    'cancelled': 'Cancelled'
+  };
+  
+  const statusNames = analytics.contactsByStatus.map(item => statusLabels[item._id] || item._id);
+  const statusCounts = analytics.contactsByStatus.map(item => item.count);
+
   const deviceData = {
-    labels: ['Desktop', 'Mobile', 'Tablet'],
+    labels: statusNames.length > 0 ? statusNames : ['No Data'],
     datasets: [
       {
-        data: [60, 35, 5],
-        backgroundColor: ['#FF6600', '#1f2937', '#6b7280'],
+        data: statusCounts.length > 0 ? statusCounts : [0],
+        backgroundColor: ['#3b82f6', '#eab308', '#8b5cf6', '#22c55e', '#6b7280', '#ef4444'],
         borderWidth: 0,
       },
     ],
@@ -196,7 +273,7 @@ const AdminAnalytics = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-dark-800 rounded-xl border border-dark-700 p-6"
           >
-            <h3 className="text-xl font-semibold text-white mb-6">Visitor Trends</h3>
+            <h3 className="text-xl font-semibold text-white mb-6">Contact Inquiry Trends</h3>
             <Line data={visitorData} options={chartOptions} />
           </motion.div>
 
@@ -207,7 +284,7 @@ const AdminAnalytics = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="bg-dark-800 rounded-xl border border-dark-700 p-6"
           >
-            <h3 className="text-xl font-semibold text-white mb-6">Service Inquiries</h3>
+            <h3 className="text-xl font-semibold text-white mb-6">Event Type Distribution</h3>
             <Bar data={serviceData} options={chartOptions} />
           </motion.div>
         </div>
@@ -221,43 +298,54 @@ const AdminAnalytics = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="bg-dark-800 rounded-xl border border-dark-700 p-6"
           >
-            <h3 className="text-xl font-semibold text-white mb-6">Device Usage</h3>
+            <h3 className="text-xl font-semibold text-white mb-6">Contact Status</h3>
             <Doughnut data={deviceData} options={doughnutOptions} />
           </motion.div>
 
-          {/* Top Pages */}
+          {/* Gallery Categories */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
             className="bg-dark-800 rounded-xl border border-dark-700 p-6 lg:col-span-2"
           >
-            <h3 className="text-xl font-semibold text-white mb-6">Top Pages</h3>
+            <h3 className="text-xl font-semibold text-white mb-6">Gallery Categories</h3>
             <div className="space-y-4">
-              {[
-                { page: '/gallery', views: '3,245', percentage: 85 },
-                { page: '/services', views: '2,156', percentage: 65 },
-                { page: '/', views: '1,987', percentage: 60 },
-                { page: '/about', views: '1,432', percentage: 45 },
-                { page: '/contact', views: '987', percentage: 30 },
-              ].map((item, index) => (
-                <div key={item.page} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-white font-medium">{item.page}</span>
-                      <span className="text-gray-400 text-sm">{item.views} views</span>
+              {analytics.imagesByCategory.length > 0 ? (
+                analytics.imagesByCategory.map((item, index) => {
+                  const maxCount = Math.max(...analytics.imagesByCategory.map(i => i.count));
+                  const percentage = (item.count / maxCount) * 100;
+                  const categoryNames = {
+                    'weddings': 'Weddings',
+                    'pre-weddings': 'Pre-Weddings',
+                    'events': 'Events',
+                    'portraits': 'Portraits'
+                  };
+                  
+                  return (
+                    <div key={item._id} className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white font-medium capitalize">
+                            {categoryNames[item._id] || item._id}
+                          </span>
+                          <span className="text-gray-400 text-sm">{item.count} images</span>
+                        </div>
+                        <div className="w-full bg-dark-700 rounded-full h-2">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${percentage}%` }}
+                            transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+                            className="bg-primary-600 h-2 rounded-full"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="w-full bg-dark-700 rounded-full h-2">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${item.percentage}%` }}
-                        transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                        className="bg-primary-600 h-2 rounded-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              ) : (
+                <p className="text-gray-400 text-center py-8">No gallery data available</p>
+              )}
             </div>
           </motion.div>
         </div>

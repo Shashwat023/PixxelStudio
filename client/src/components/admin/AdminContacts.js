@@ -26,14 +26,22 @@ const AdminContacts = () => {
 
   useEffect(() => {
     fetchContacts();
-  }, [selectedStatus, page]);
+  }, [page]);
+
+  useEffect(() => {
+    // Reset and fetch when status changes
+    setContacts([]);
+    setPage(1);
+    fetchContacts(true);
+  }, [selectedStatus]);
 
   const fetchContacts = async (reset = false) => {
     try {
       setLoading(true);
+      const currentPage = reset ? 1 : page;
       const params = {
         status: selectedStatus === 'all' ? undefined : selectedStatus,
-        page: reset ? 1 : page,
+        page: currentPage,
         limit: 20
       };
 
@@ -42,9 +50,13 @@ const AdminContacts = () => {
 
       if (reset) {
         setContacts(newContacts);
-        setPage(1);
       } else {
-        setContacts(prev => [...prev, ...newContacts]);
+        // Prevent duplicates by checking if contact already exists
+        setContacts(prev => {
+          const existingIds = new Set(prev.map(c => c._id));
+          const uniqueNewContacts = newContacts.filter(c => !existingIds.has(c._id));
+          return [...prev, ...uniqueNewContacts];
+        });
       }
 
       setHasMore(response.data.pagination.current < response.data.pagination.pages);
@@ -157,11 +169,7 @@ const AdminContacts = () => {
           </div>
           <select
             value={selectedStatus}
-            onChange={(e) => {
-              setSelectedStatus(e.target.value);
-              setPage(1);
-              fetchContacts(true);
-            }}
+            onChange={(e) => setSelectedStatus(e.target.value)}
             className="px-4 py-3 bg-dark-800 border border-dark-700 rounded-lg text-white focus:outline-none focus:border-primary-600"
           >
             {statusOptions.map(status => (
@@ -276,13 +284,10 @@ const AdminContacts = () => {
         )}
 
         {/* Load More */}
-        {hasMore && !loading && (
+        {hasMore && !loading && filteredContacts.length > 0 && (
           <div className="text-center mt-8">
             <button
-              onClick={() => {
-                setPage(prev => prev + 1);
-                fetchContacts();
-              }}
+              onClick={() => setPage(prev => prev + 1)}
               className="bg-dark-800 hover:bg-dark-700 text-white px-6 py-3 rounded-lg transition-colors"
             >
               Load More

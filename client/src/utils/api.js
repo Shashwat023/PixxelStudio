@@ -57,6 +57,9 @@ export const adminAPI = {
   // Content management
   getContent: () => api.get('/admin/content'),
   updateContent: (section, data) => api.put(`/admin/content/${section}`, data),
+  
+  // Analytics
+  getAnalytics: () => api.get('/admin/analytics'),
 };
 
 export default api;

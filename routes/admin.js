@@ -288,6 +288,88 @@ router.put('/contacts/:id', auth, async (req, res) => {
   }
 });
 
+// Get analytics data
+router.get('/analytics', auth, async (req, res) => {
+  try {
+    // Get total contacts count
+    const totalContacts = await Contact.countDocuments();
+    
+    // Get contacts by status
+    const contactsByStatus = await Contact.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+    
+    // Get contacts by event type
+    const contactsByEventType = await Contact.aggregate([
+      { $match: { eventType: { $exists: true, $ne: null } } },
+      { $group: { _id: '$eventType', count: { $sum: 1 } } }
+    ]);
+    
+    // Get total gallery images
+    const totalGalleryImages = await Gallery.countDocuments();
+    
+    // Get images by category
+    const imagesByCategory = await Gallery.aggregate([
+      { $group: { _id: '$category', count: { $sum: 1 } } }
+    ]);
+    
+    // Get contacts over time (last 7 months)
+    const sevenMonthsAgo = new Date();
+    sevenMonthsAgo.setMonth(sevenMonthsAgo.getMonth() - 6);
+    
+    const contactsOverTime = await Contact.aggregate([
+      { $match: { createdAt: { $gte: sevenMonthsAgo } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+    
+    // Get recent contacts count (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentContacts = await Contact.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
+    
+    // Get previous 30 days count for comparison
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+    const previousContacts = await Contact.countDocuments({ 
+      createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } 
+    });
+    
+    // Calculate percentage change
+    const contactsChange = previousContacts > 0 
+      ? ((recentContacts - previousContacts) / previousContacts * 100).toFixed(1)
+      : 0;
+    
+    // Get booked events count
+    const bookedEvents = await Contact.countDocuments({ status: 'booked' });
+    const completedEvents = await Contact.countDocuments({ status: 'completed' });
+    
+    res.json({
+      totalContacts,
+      recentContacts,
+      contactsChange,
+      bookedEvents,
+      completedEvents,
+      totalGalleryImages,
+      contactsByStatus,
+      contactsByEventType,
+      imagesByCategory,
+      contactsOverTime
+    });
+  } catch (error) {
+    console.error('Analytics fetch error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get/Update content sections
 router.get('/content', auth, async (req, res) => {
   try {
